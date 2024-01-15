@@ -28,21 +28,26 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
 
     public String register (RegistrationRequest request){
+        //TODO: validate user email
         boolean isEmailValid = emailValidator.test(request.getEmail());
         if(!isEmailValid){
             throw new IllegalStateException("email not valid");
         }
 
+        //TODO: create a user email token from user details
+        //NOTE: this token is supposed to be sent the user's email for email verification but since this is just for test I will not be implementing the email part of the service.
         String token = userService.signUpUser(
                 new Users(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), Role.USER)
         );
 
+        //TODO: return token
         return token;
     }
 
 
     @Transactional
     public LoginResponse confirmToken(String token) {
+        //TODO: get token exists
         ConfirmationToken confirmationToken = confirmationTokenService
                 .getToken(token)
                 .orElseThrow(() ->
@@ -50,23 +55,38 @@ public class RegistrationService {
                             throw new ApiRequestException("Token not found");
                         }
                 );
+
+        //TODO:  check if token ecists
         if (confirmationToken.getConfirmedAt() != null) {
             throw new ApiRequestException("email already confirmed");
         }
+
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
+        // TODO: check if token is expired
         if (expiredAt.isBefore(LocalDateTime.now())) {
             throw new ApiRequestException("Token expired");
         }
 
+        //TODO set confirmed date
         confirmationTokenService.setConfirmedAt(token);
+
+        //TODO: set user enabled status to true
         userService.enableAppUser(
                 confirmationToken.getUser().getEmail());
+
+        //TODO: get user by confirmation token
         var user = usersRepository.findByEmail(confirmationToken.getUser().
                         getEmail()).
                 orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        //TODO: generate jwt for user
         var jwtToken = jwtService.generateToken(user);
+
+        //TODO: save user jwt token
         helpers.saveUserToken(user, jwtToken);
+
+        //TODO: return token
         return new LoginResponse(jwtToken);
     }
 }

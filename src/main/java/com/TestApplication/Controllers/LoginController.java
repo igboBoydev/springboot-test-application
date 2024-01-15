@@ -24,6 +24,7 @@ public class LoginController {
     private final LoginService loginService;
 
 
+    //TODO: create an endpoint for login
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request){
         return loginService.login(request);

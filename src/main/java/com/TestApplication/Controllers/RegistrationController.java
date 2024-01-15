@@ -16,11 +16,14 @@ public class RegistrationController {
 
     private final RegistrationService registrationService;
 
+
+    //TODO: register user
     @PostMapping("/register")
     public String register(@RequestBody @Valid RegistrationRequest request){
         return registrationService.register(request);
     }
 
+    //TODO: confirm user registration token
     @GetMapping(path = "/confirm")
     public LoginResponse confirm(@RequestParam("token") String token) {
         return registrationService.confirmToken(token);

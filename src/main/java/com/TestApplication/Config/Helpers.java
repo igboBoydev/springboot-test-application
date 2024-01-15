@@ -6,34 +6,42 @@ import com.TestApplication.Models.Token;
 import com.TestApplication.Models.Users;
 import com.TestApplication.Repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class Helpers {
     private final TokenRepository tokenRepository;
 
-    public Helpers(TokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
-    }
 
     public void saveUserToken(Users user, String token) {
+        //TODO: build user token model
         var Token = com.TestApplication.Models.Token.builder().users(user).key(token).revoked(false).expired(false).tokenType(TokenType.BEARER).build();
+
+        //TODO: save user token
         tokenRepository.save(Token);
     }
 
     public void revokeUsersTokens(Users user){
+        //TODO: get all user token
         var validUserTokens = tokenRepository.findAllValidTokensByUsers(user.getId());
         if(validUserTokens.isEmpty()){
             return;
         }
+
+        //TODO: set all user tokens to expired and revoked
         validUserTokens.forEach(t -> {
             t.setRevoked(true);
             t.setExpired(true);
         });
+
+        //TODO: save updated user token
         tokenRepository.saveAll(validUserTokens);
     }
 
     public boolean checkTokenValidity(String token){
+        //TODO: get token if not expired or revoked
         return tokenRepository.findByKey(token).map(t -> !t.isExpired() && !t.isRevoked()).orElse(false);
     }
 
