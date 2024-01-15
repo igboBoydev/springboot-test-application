@@ -46,4 +46,10 @@ public class BooksController {
         return booksService.deleteBookByUuid(uuid);
     }
 
+    @PutMapping("/status")
+    public ResponseMessage updateBookStatus(@RequestParam("uuid") String uuid, @RequestParam("status") String status){
+        System.out.println("mmmmmmmmmmmmmmmmmmmmmm");
+        return booksService.updateBookStatus(uuid, status);
+    }
+
 }

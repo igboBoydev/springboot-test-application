@@ -76,4 +76,16 @@ public class BooksService {
 
         return ResponseMessage.builder().message("book deleted successfully").statusCode(200).build();
     }
+
+    public ResponseMessage updateBookStatus(String uuid, String status){
+        Optional<Books> books = booksRepository.getBookByUuid(uuid);
+
+        if(books.isEmpty()){
+            return ResponseMessage.builder().message("Book not found").statusCode(404).build();
+        }
+        books.get().setStatus(status);
+        booksRepository.save(books.get());
+
+        return ResponseMessage.builder().message("Book status updated successfully").statusCode(200).build();
+    }
 }
